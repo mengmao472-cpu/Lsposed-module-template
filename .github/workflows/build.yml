@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application'
 }
 android {
-    namespace 'com.example.module' // 确保有这一行
+    namespace 'com.example.module'
     compileSdk 34
     defaultConfig {
         applicationId "com.example.module"
@@ -22,5 +22,5 @@ android {
     }
 }
 dependencies {
-    compileOnly 'io.github.libxposed:api:102.0.0' // 更新到最新版本
+    compileOnly 'io.github.libxposed:api:102.0.0'
 }
