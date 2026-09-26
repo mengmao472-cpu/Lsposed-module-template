@@ -4,8 +4,8 @@
 
     <application
         android:allowBackup="true"
-        android:label="@string/app_name"
-        android:description="@string/xposed_description"
+        android:label="iOS Bar Nextgen"
+        android:description="@ios 小白条重构版"
         android:supportsRtl="true"
         tools:ignore="AllowBackup,MissingApplicationIcon" />
 
