@@ -27,7 +27,6 @@ public class MainModule extends XposedModule {
                 @AfterInvocation
                 public void after(AfterInvocationCallback callback) {
                     Object handle = callback.getThisObject();
-                    
                     setIntField(handle, "mHandleBottom", 12);
                     setIntField(handle, "mHeight", 22);
                     setIntField(handle, "mWidth", 780);
