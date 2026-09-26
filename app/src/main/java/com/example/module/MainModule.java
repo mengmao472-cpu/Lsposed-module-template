@@ -1,21 +1,13 @@
 package com.example.module;
 
-import android.annotation.SuppressLint;
-
-import androidx.annotation.NonNull;
-
+import android.util.Log;
 import io.github.libxposed.api.XposedInterface;
 import io.github.libxposed.api.XposedModule;
-import io.github.libxposed.api.annotations.BeforeInvocation;
-import io.github.libxposed.api.annotations.XposedHooker;
+import io.github.libxposed.api.XposedHooker;
+import io.github.libxposed.api.annotation.AfterInvocation;
+import io.github.libxposed.api.callbacks.AfterInvocationCallback;
+import java.lang.reflect.Field;
 
-/**
- * 这是 Xposed 模块的入口类。
- * 客户化建议：
- * 1. 修改包名 `com.example.module` 为你自己的包名。
- * 2. 在 `onSystemServerLoaded` 或 `onPackageLoaded` 中添加你的 Hook 逻辑。
- */
-@SuppressLint({"PrivateApi", "BlockedPrivateApi"})
 public class MainModule extends XposedModule {
 
     public MainModule(XposedInterface base, ModuleLoadedParam param) {
@@ -23,41 +15,35 @@ public class MainModule extends XposedModule {
     }
 
     @Override
-    public void onSystemServerLoaded(@NonNull SystemServerLoadedParam param) {
-        super.onSystemServerLoaded(param);
-        // 在这里添加针对 System Server 的 Hook 逻辑
-        // 例如:
-        // try {
-        //     var classLoader = param.getClassLoader();
-        //     var clazz = classLoader.loadClass("com.android.server.wm.WindowManagerService");
-        //     // hook(method, MyHooker.class);
-        // } catch (Throwable t) {
-        //     log("Hook failed", t);
-        // }
-    }
-
-    @Override
-    public void onPackageLoaded(@NonNull PackageLoadedParam param) {
+    public void onPackageLoaded(PackageLoadedParam param) {
         super.onPackageLoaded(param);
-        // 在这里添加针对特定应用的 Hook 逻辑
-        // if (param.getPackageName().equals("com.target.package")) {
-        //     // ...
-        // }
+        
+        if (!param.getPackageName().equals("com.android.systemui")) return;
+
+        try {
+            Class<?> clazz = param.getClassLoader().loadClass("com.oplus.systemui.navigationbar.gesture.sidegesture.OplusNavigationHandle");
+            
+            hook(clazz, "onDraw", new XposedHooker() {
+                @AfterInvocation
+                public void after(AfterInvocationCallback callback) {
+                    Object handle = callback.getThisObject();
+                    
+                    setIntField(handle, "mHandleBottom", 12);
+                    setIntField(handle, "mHeight", 22);
+                    setIntField(handle, "mWidth", 780);
+                    setIntField(handle, "mRadius", 11);
+                }
+            });
+        } catch (Throwable t) {
+            log(Log.ERROR, "IosBarTuner", "Hook error: " + t.getMessage());
+        }
     }
 
-    /**
-     * 这是一个简单的 Hooker 示例。
-     */
-    @XposedHooker
-    private static class ExampleHooker implements Hooker {
-        @BeforeInvocation
-        public static void before(@NonNull BeforeHookCallback callback) {
-            // 在方法执行前执行的逻辑
-        }
-
-        // @AfterInvocation
-        // public static void after(@NonNull AfterHookCallback callback) {
-        //     // 在方法执行后执行的逻辑
-        // }
+    private void setIntField(Object obj, String fieldName, int value) {
+        try {
+            Field field = obj.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.setInt(obj, value);
+        } catch (Exception ignored) {}
     }
 }
