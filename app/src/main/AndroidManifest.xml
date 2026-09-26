@@ -8,7 +8,7 @@
         android:label="iOS Bar Nextgen"
         android:description="iOS 小白条重构版"
         android:supportsRtl="true"
-        tools:ignore="AllowBackup,MissingApplicationIcon" />
+        tools:ignore="AllowBackup,MissingApplicationIcon">
 
         <activity
             android:name=".MainActivity"
